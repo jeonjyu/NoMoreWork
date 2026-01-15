@@ -36,12 +36,13 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         _listViewport = GetComponent<Transform>();
     }
 
+    RoomOptions roomOptions = new RoomOptions { MaxPlayers = 4, PublishUserId = true };
+
     public void CreateRoom()
     {
         Debug.Log(_roomInput.text);
         // 생성 후 입장
-        PhotonNetwork.CreateRoom(_roomInput.text);
-        //PhotonNetwork.CreateRoom(_roomInput.text, new RoomOptions { MaxPlayers = 4 });
+        PhotonNetwork.CreateRoom(_roomInput.text, roomOptions);
     }
 
     public void JoinRoom()
