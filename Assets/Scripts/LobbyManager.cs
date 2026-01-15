@@ -24,7 +24,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.ConnectUsingSettings();
         }
-        else 
+        else
         {
             PhotonNetwork.JoinLobby();
         }
@@ -80,17 +80,19 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     /// <param name="roomList">현재 생성된 방 목록</param>
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        foreach (GameObject child in _listViewport) Destroy(child);
+        if(_listViewport.childCount > 0)
+        {
+            RectTransform[] slots = _listViewport.GetComponentsInChildren<RectTransform>();
+            foreach (RectTransform child in slots) Destroy(child.gameObject);
+        }
 
-        Debug.Log("[LobbyManager] 방 목록");
+        //Debug.Log("[LobbyManager] 방 목록");
+        Debug.Log("[LobbyManager] 방 갯수 : " + roomList.Count);
         foreach (RoomInfo roomInfo in roomList) 
         {
-            if(roomInfo.RemovedFromList == true)
-            {
-                //Destroy()
-            }
             var roomSlot = Instantiate(_roomSlotPrefab, _listViewport);
             // 직접 배열로 접근해도 되는건가? > to-do : MVP로 만들어 룸 슬롯 모델/뷰로 리팩토링하기 
+            Debug.Log("[LobbyManager] 방 " + roomInfo.Name + " "+  roomInfo.PlayerCount);
             TMP_Text[] texts = roomSlot.GetComponentsInChildren<TMP_Text>();
             
             if(texts.Length == 2)
