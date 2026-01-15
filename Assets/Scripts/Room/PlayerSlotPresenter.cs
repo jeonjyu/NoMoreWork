@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Photon.Realtime;
+using UnityEngine;
 // presenter
 // 뷰 - 모델 데이터 동기화
 // 
@@ -7,11 +8,18 @@ public class PlayerSlotPresenter : MonoBehaviour, IPlayerPresenter
 {
     [SerializeField] PlayerSlotView _view;
     [SerializeField] PlayerSlotModel _model;
+    //[SerializeField] UserInfo _userInfo;
 
-    public PlayerSlotPresenter(PlayerSlotView view, PlayerSlotModel model)
+    public void Init(Player player)
+    {
+        _view = gameObject.GetComponentInParent<PlayerSlotView>();
+        _model = new PlayerSlotModel(player);
+    }
+
+    public PlayerSlotPresenter(PlayerSlotView view, Player player)
     {
         _view = view;
-        _model = model;
+        //_model = gameObject.AddComponent<PlayerSlotModel>(player);
     }
 
     public void OnEnable()

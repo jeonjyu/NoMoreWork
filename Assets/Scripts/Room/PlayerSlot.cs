@@ -12,14 +12,14 @@ using System;
 // 플레이어 준비, 방에서 나가기
 
 // model
-public class PlayerSlotModel : MonoBehaviour
+public class PlayerSlotModel 
 {
-
+    UserInfo userInfo;
     // field
-    private string _playerName;
+    private string _userName;
     
     // property
-    public string PlayerName => _playerName;
+    public string UserName => _userName;
 
     // 커스텀 프로퍼티로 플레이어 준비 상태 같이 전송
     HashTable playerSlotProps = new HashTable() { { "IsReady", false } };
@@ -34,7 +34,7 @@ public class PlayerSlotModel : MonoBehaviour
 
     public PlayerSlotModel(Player player)
     {
-        _playerName = player.NickName;
+        _userName = player.NickName;
         PhotonNetwork.LocalPlayer.SetCustomProperties(playerSlotProps);
     }
 }
