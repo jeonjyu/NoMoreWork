@@ -374,7 +374,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LobbyManager
   _roomInput: {fileID: 411497628}
   _roomSlotPrefab: {fileID: 8228729282137761306, guid: 1931e5daa134d6142964baf58de0ae33, type: 3}
-  _listViewport: {fileID: 0}
+  _listViewport: {fileID: 180438153}
 --- !u!4 &203752424
 Transform:
   m_ObjectHideFlags: 0

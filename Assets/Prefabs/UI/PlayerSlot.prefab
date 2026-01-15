@@ -182,7 +182,7 @@ MonoBehaviour:
   m_charWidthMaxAdj: 0
   m_TextWrappingMode: 1
   m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
+  m_overflowMode: 3
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
@@ -295,6 +295,7 @@ GameObject:
   - component: {fileID: 785424048001475104}
   - component: {fileID: 6900009715384757160}
   - component: {fileID: 4613593893814194851}
+  - component: {fileID: 7521324466668825459}
   m_Layer: 5
   m_Name: PlayerSlot
   m_TagString: Untagged
@@ -377,3 +378,16 @@ MonoBehaviour:
   _profileImage: {fileID: 2045649870824345099}
   _nickname: {fileID: 8380068947262832536}
   _readyIcon: {fileID: 8145590856450606467}
+--- !u!114 &7521324466668825459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8534842825797702284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 730ce780ef7a1584a9dc6784f3379240, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSlotPresenter
+  _view: {fileID: 0}
