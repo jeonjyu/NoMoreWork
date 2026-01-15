@@ -39,29 +39,33 @@ public class FirebaseAuthManager : MonoBehaviour
     public FirebaseAuth _auth;
     public static FirebaseUser _user;
     public static DatabaseReference _dbRef;
+    public static bool isAwaken;
 
     [SerializeField] TMP_InputField _emailField;
     [SerializeField] TMP_InputField _passwordField;
     [SerializeField] TMP_InputField _usernameField;
-
     [SerializeField] TMP_Text _errText;
+
+    public static event Action<string> OnLogin;
+    public static event Action<UserInfo> OnRegister;
 
     private void Awake()
     {
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task => {
             var dependencyStatus = task.Result;
-            if (dependencyStatus == Firebase.DependencyStatus.Available)
+            if (dependencyStatus == DependencyStatus.Available)
             {
                 // Create and hold a reference to your FirebaseApp,
                 _app = FirebaseApp.DefaultInstance;
                 _auth = FirebaseAuth.DefaultInstance;
                 _dbRef = FirebaseDatabase.DefaultInstance.RootReference;
-
+                Debug.Log("[FirebaseAuthManager] Firebase 의존성 설정 완료");
+                isAwaken = true;
                 // Set a flag here to indicate whether Firebase is ready to use by your app.
             }
             else
             {
-                Debug.LogError("[" + this.GetType().Name + "] Firebase 의존성 설정 실패 : " + dependencyStatus);
+                Debug.LogError("[FirebaseAuthManager] Firebase 의존성 설정 실패 : " + dependencyStatus);
                 // Firebase Unity SDK is not safe to use here.
                 //_app = null;
                 //_auth = null;
@@ -95,6 +99,8 @@ public class FirebaseAuthManager : MonoBehaviour
         else
         {
             _user = loginTask.Result.User;
+            UserInfo userInfo = new UserInfo(userName: _user.DisplayName, userId: _user.UserId);
+            OnLogin?.Invoke(userInfo.UserId);
             Debug.Log($"[FirebaseAuthManager] 로그인 성공 : {_user.DisplayName}");
             SceneManager.LoadScene(1);
         }
@@ -145,6 +151,8 @@ public class FirebaseAuthManager : MonoBehaviour
                 else
                 {
                     _errText.text = "";
+                    UserInfo userInfo = new UserInfo(userName: _user.DisplayName, userId: _user.UserId);
+                    OnRegister?.Invoke(userInfo);
                     Debug.Log("[FirebaseAuthManager] 프로필 설정 성공 " + _user.DisplayName);
                 }
             }
@@ -156,7 +164,7 @@ public class FirebaseAuthManager : MonoBehaviour
     {        
         FieldInfo fieldInfo = errCode.GetType().GetField(errCode.ToString());
         DescriptionAttribute description = fieldInfo.GetCustomAttribute(typeof(DescriptionAttribute), false) as DescriptionAttribute;
-        Debug.LogError("[" + this.GetType().Name + "] " + errCode.GetType().Name + " 에러코드 : " + description);
+        Debug.LogError("[FirebaseAuthManager] " + errCode.GetType().Name + " 에러코드 : " + description);
 
         _errText.text = description.Description;
     }
