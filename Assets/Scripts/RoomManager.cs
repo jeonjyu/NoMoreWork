@@ -3,6 +3,7 @@ using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
 
 
 public class RoomManager : MonoBehaviourPunCallbacks
@@ -13,8 +14,10 @@ public class RoomManager : MonoBehaviourPunCallbacks
     [SerializeField] Button _readyBtn;
     [SerializeField] Button _startBtn;
 
-    void Start()
+    private IEnumerator Start()
     {
+        yield return new WaitUntil(() => PhotonNetwork.InRoom);
+
         players = PhotonNetwork.PlayerList;
 
         foreach (var p in players) Debug.Log(p.UserId);
@@ -33,6 +36,15 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
         UpdateUI();
         // 준비 완료 등 처리
+    }
+
+    public void StartGame()
+    {
+        if(PhotonNetwork.IsMasterClient == true)
+        {
+            Debug.Log("[RoomManger] 게임 시작");
+            PhotonNetwork.LoadLevel(3);
+        }
     }
 
     // 플레이어에 변동이 있으면 업데이트
