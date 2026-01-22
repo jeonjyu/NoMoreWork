@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
@@ -48,7 +49,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public void JoinRoom()
     {
         // 클릭한 룸에 들어감
-        //PhotonNetwork.JoinRoom(gameObject.GetComponent<RoolSlot>);
+        //PhotonNetwork.JoinRoom(gameObject.GetComponent<RoomSlot>);
     }
 
     public void JoinRandomRoom()
@@ -86,26 +87,35 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             foreach (RectTransform child in slots) Destroy(child.gameObject);
         }
 
-        //Debug.Log("[LobbyManager] 방 목록");
         Debug.Log("[LobbyManager] 방 갯수 : " + roomList.Count);
+
         foreach (RoomInfo roomInfo in roomList) 
         {
-            var roomSlot = Instantiate(_roomSlotPrefab, _listViewport);
-            // 직접 배열로 접근해도 되는건가? > to-do : MVP로 만들어 룸 슬롯 모델/뷰로 리팩토링하기 
             Debug.Log("[LobbyManager] 방 " + roomInfo.Name + " "+  roomInfo.PlayerCount);
+            GameObject roomSlot = Instantiate(_roomSlotPrefab, _listViewport);
+
+            // 직접 배열로 접근해도 되는건가? > to-do : MVP로 만들어 룸 슬롯 모델/뷰로 리팩토링하기 
+            //roomSlot?.GetComponent<RoomSlotView>().Init(roomInfo);
+
             TMP_Text[] texts = roomSlot.GetComponentsInChildren<TMP_Text>();
-            
-            if(texts.Length == 2)
+
+            if (texts.Length > 0)
             {
                 texts[0].text = roomInfo.Name;
                 texts[1].text = roomInfo.PlayerCount + " / " + roomInfo.MaxPlayers;
             }
-            
+
+            //버튼에 이벤트 리스너 추가
+            Button btn = roomSlot.GetComponentInChildren<Button>();
+            btn.onClick.AddListener(() => PhotonNetwork.JoinRoom(roomInfo.Name));
+
+
+
             // 내가 만든 방에서 나왔을 때 반영이 안되는 버그
             // 슬롯이 업데이트가 안되는 건지는 모르겠다
 
             // 방에 참가할 수 없을 경우 disable화
-            if(roomInfo.IsOpen == false)
+            if (roomInfo.IsOpen == false)
             {
                 roomSlot.gameObject.GetComponent<Button>().interactable = false;
             }
