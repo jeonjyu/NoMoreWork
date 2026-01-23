@@ -38,7 +38,7 @@ public class FirebaseDBManager : MonoBehaviour
         if (_dbRef == null) Debug.Log("[FirebaseDBManager] db 없음");
         if (userInfo == null) Debug.Log("[FirebaseDBManager] user 없음");
 
-        //HashTable userProperty = new HashTable() { { "UserName", "player" } };
+        HashTable userProperty = new HashTable() { { "UserName", userInfo.UserName } };
 
         var DBTask = _dbRef.Child("users").Child(userInfo.UserId).Child("username").SetValueAsync(userInfo.UserName);
 
@@ -51,7 +51,7 @@ public class FirebaseDBManager : MonoBehaviour
         else
         {
             // 저장 완료 
-            //PhotonNetwork.LocalPlayer.SetCustomProperties();
+            PhotonNetwork.LocalPlayer.SetCustomProperties(userProperty);
             Debug.Log("[FirebaseDBManager] 닉네임 업데이트 성공 " + userInfo.UserName);
         }
     }
