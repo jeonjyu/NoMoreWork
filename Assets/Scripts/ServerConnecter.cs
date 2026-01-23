@@ -9,6 +9,7 @@ public class ServerConnecter : MonoBehaviourPunCallbacks
     void Awake()
     {
         PhotonNetwork.AutomaticallySyncScene = true;
+        ConnectToSevcer();
     }
 
     public void ConnectToSevcer()
@@ -23,7 +24,7 @@ public class ServerConnecter : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("[ServerConnecter] 마스터 서버 연결");
-        PhotonNetwork.JoinLobby();
+        //PhotonNetwork.JoinLobby();
         //SceneManager.LoadScene(1);
     }
 
