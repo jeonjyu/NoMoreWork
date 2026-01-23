@@ -2,6 +2,7 @@
 using Firebase.Auth;
 using Firebase.Database;
 using Firebase.Extensions;
+using Photon.Pun;
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -32,7 +33,7 @@ public enum RegisterErrMsg
 /// <summary>
 /// 로비에서 로그인, 회원가입 처리
 /// </summary>
-public class FirebaseAuthManager : MonoBehaviour
+public class FirebaseAuthManager : Singleton<FirebaseAuthManager>
 {
     [SerializeField] Button _loginBtn;
     private FirebaseApp _app;
@@ -78,10 +79,10 @@ public class FirebaseAuthManager : MonoBehaviour
         StartCoroutine(LoginCoroutine(_emailField.text, _passwordField.text));
     }
 
-    IEnumerator LoginCoroutine(string id, string pw)
+    public IEnumerator LoginCoroutine(string id, string pw)
     {
         // 로그인 결과 콜백으로 받아와 저장
-        Task<AuthResult> loginTask = _auth.SignInWithEmailAndPasswordAsync(id, pw);
+        Task<AuthResult> loginTask = _auth.SignInWithEmailAndPasswordAsync(id + "@nomorework.com", pw);
 
         // 로그인 정보 저장이 완료될 때까지 대기
         yield return new WaitUntil(predicate: () => loginTask.IsCompleted);
@@ -102,6 +103,7 @@ public class FirebaseAuthManager : MonoBehaviour
             UserInfo userInfo = new UserInfo(userName: _user.DisplayName, userId: _user.UserId);
             OnLogin?.Invoke(userInfo.UserId);
             Debug.Log($"[FirebaseAuthManager] 로그인 성공 : {_user.DisplayName}");
+            PhotonNetwork.JoinLobby();
             SceneManager.LoadScene(1);
         }
     }
@@ -111,9 +113,9 @@ public class FirebaseAuthManager : MonoBehaviour
         StartCoroutine(RegisterCoroutine(_emailField.text, _passwordField.text, _usernameField.text));
     }
 
-    IEnumerator RegisterCoroutine(string id, string ps, string username)
+    public IEnumerator RegisterCoroutine(string id, string ps, string username)
     {
-        Task<AuthResult> registerResult = _auth.CreateUserWithEmailAndPasswordAsync(id, ps);
+        Task<AuthResult> registerResult = _auth.CreateUserWithEmailAndPasswordAsync(id + "@nomorework.com", ps);
 
         yield return new WaitUntil(predicate: () => registerResult.IsCompleted);
 
