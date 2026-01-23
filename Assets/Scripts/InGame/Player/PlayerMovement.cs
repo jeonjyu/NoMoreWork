@@ -1,23 +1,19 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using Photon.Pun;
 
-public class PlayerMovement : MonoBehaviour, IMovement
+public class PlayerMovement : MonoBehaviourPun
 {
     public InputActionAsset _inputActions;
     
     InputAction _moveAction;
-    InputAction _lookAction;
     InputAction _jumpAction;
-    InputAction _attackAction;
+    InputAction _interactAction;
 
     InputAction _pauseActionPlayer;
     InputAction _pauseActionUI;
 
-
     Vector2 _movement;
-    Vector2 _look;
-
-    Vector3 _direction;
     
     public float _moveSpeed = 3f;
     public float _rotateSpeed = 3f;
@@ -40,10 +36,11 @@ public class PlayerMovement : MonoBehaviour, IMovement
 
     void Awake()
     {
+        if (!photonView.IsMine) return;
+        
         _moveAction = InputSystem.actions.FindAction("Move");
-        _lookAction = InputSystem.actions.FindAction("Look");
         _jumpAction = InputSystem.actions.FindAction("Jump");
-        _attackAction = InputSystem.actions.FindAction("Attack");
+        _interactAction = InputSystem.actions.FindAction("Interact");
 
         _pauseActionPlayer = InputSystem.actions.FindAction("Player/Pause");
         _pauseActionUI = InputSystem.actions.FindAction("UI/Pause");
@@ -54,16 +51,30 @@ public class PlayerMovement : MonoBehaviour, IMovement
 
     private void Update()
     {
+        if (!photonView.IsMine) return;
+
         _movement = _moveAction.ReadValue<Vector2>();
-        _look = _lookAction.ReadValue<Vector2>();
 
         if (_jumpAction.WasPressedThisFrame())
         {
             Jump();
         }
-        if (_attackAction.WasPressedThisFrame())
+
+        if (_interactAction.WasPressedThisFrame())
         {
-            Attack();
+            _animator.SetBool("IsHolding", true);
+            Interact();
+        }
+
+        if (_interactAction.IsPressed())
+        {
+            //Interact();
+        }
+
+        if (_interactAction.WasReleasedThisFrame())
+        {
+            _animator.SetBool("IsHolding", false);
+
         }
 
         DiplayPause();
@@ -71,6 +82,8 @@ public class PlayerMovement : MonoBehaviour, IMovement
 
     private void FixedUpdate()
     {
+        if (!photonView.IsMine) return;
+
         Move();
     }
 
@@ -99,11 +112,10 @@ public class PlayerMovement : MonoBehaviour, IMovement
         _animator.SetTrigger("Jump");
     }
 
-    public void Attack()
+    public void Interact()
     {
-        // 공격 호출
-        Debug.Log("공격");
-        _animator.SetTrigger("Attack");
+        Debug.Log("상호작용");
+        _animator.SetTrigger("Interact");
     }
 
     // 게임 일시 정지 후 UI 입력/Player 입력 활성화
