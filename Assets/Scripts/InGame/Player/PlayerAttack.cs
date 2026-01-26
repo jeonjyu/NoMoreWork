@@ -13,7 +13,7 @@ public class PlayerAttack : MonoBehaviourPun
 
     Animator _animator;
 
-    //PhotonView photonView;
+    PhotonView pv;
 
     private void OnEnable()
     {
@@ -27,27 +27,27 @@ public class PlayerAttack : MonoBehaviourPun
 
     void Awake()
     {
-        if (!photonView.IsMine) return;
+        pv = GetComponent<PhotonView>();
+        if (!pv.IsMine) return;
 
         Debug.Log("[PlayerAttack] Awake");
 
         _attackAction = InputSystem.actions.FindAction("Attack");
         _animator = GetComponent<Animator>();
 
-        //photonView = GetComponent<PhotonView>();
     }
 
     void Update()
     {
-        if(!photonView.IsMine) return;
+        if(!pv.IsMine) return;
 
         if (_attackAction.WasPressedThisFrame())
         {
             Debug.Log("[PlayerAttack] 공격키 눌림");
-            Attack();
+            //Attack();
             // RPC 전송
             // 몹한테만 뎀이 들어가면 되면 Master를 해야 하는지 ALl을 해야 하는지
-            photonView.RPC(nameof(Attack), RpcTarget.Others);
+            pv.RPC(nameof(Attack), RpcTarget.All);
         }
     }
 
@@ -66,6 +66,6 @@ public class PlayerAttack : MonoBehaviourPun
         // 공격 호출
         Debug.Log("공격");
         _animator.SetTrigger("Attack");
-        GameObject bullet = Instantiate(bulletPrefab, firePos.position, firePos.rotation);
+        Instantiate(bulletPrefab, firePos.position, firePos.rotation);
     }
 }
