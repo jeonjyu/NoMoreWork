@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// 플레이어 생성, 방에서 나가는 거 관리
+/// 스테이지 관리, 저장
 /// </summary>
 public class GameManager : MonoBehaviourPunCallbacks
 {
