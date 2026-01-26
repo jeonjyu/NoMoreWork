@@ -101,10 +101,15 @@ crashlytics-build.properties
 # --- Resource Assets ---
 /[Aa]ssets/KenneyAssets/UI/*/*
 /[Aa]ssets/KenneyAssets/Character/*/*
+/[Aa]ssets/KenneyAssets/Character/*
 /[Aa]ssets/KenneyAssets/Map/*/*
+/[Aa]ssets/KenneyAssets/Map/*
 
 !/[Aa]ssets/KenneyAssets/Character/*/*.meta
+!/[Aa]ssets/KenneyAssets/Character/*.meta
 !/[Aa]ssets/KenneyAssets/Map/*/*.meta
+!/[Aa]ssets/KenneyAssets/Map/*.meta
+
 
 # ---Library ---
 /[Ll]ibrary
