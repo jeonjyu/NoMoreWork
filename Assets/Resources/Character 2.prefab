@@ -453,7 +453,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
   _inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   firePos: {fileID: 3916375291241676009}
-  bulletPrefab: {fileID: 7832690562770943150, guid: 974a399f1ff88ed4c9e3a3c217f717ff, type: 3}
+  bulletPrefab: {fileID: 635071342411230593, guid: 0589f86e00543564486a7fe2dd9324b6, type: 3}
 --- !u!4 &7952543952411372815 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 47677a25274356540bfd7543136f8793, type: 3}
