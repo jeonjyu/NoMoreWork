@@ -10,6 +10,12 @@ using System;
 // 다음 스테이지로 이동하면 스테이지 요소들 초기화
 // 스테이지 요소 : 클리어 UI, 퍼즐들 리스트, 클리어 퍼즐 딕셔너리, 스테이지 클리어 여부, 
 
+
+public enum StageState
+{
+    Ready, Playing, Clear
+}
+
 // PuzzleButton의 버튼만 모아서 클리어 여부 확인
 // 스테이지 클리어 판정
 public class StageManager : Singleton<StageManager>, IPunObservable
@@ -18,6 +24,7 @@ public class StageManager : Singleton<StageManager>, IPunObservable
     [SerializeField] GameObject puzzles;
 
     static int _currentStage;
+    int _numOfPuzzles;
     bool _isStageClear = false;
     public List<PuzzleButton> puzzleButtons = new List<PuzzleButton>();
     public static Dictionary<int, bool> clearedPuzzle = new Dictionary<int, bool>();
@@ -31,16 +38,8 @@ public class StageManager : Singleton<StageManager>, IPunObservable
 
     void Start()
     {
-        // 퍼즐 생성하고 번호 부여
-        // 테스트할 때는 인스펙터에서 임의로 지정
-
-        //puzzleButtons.Clear();
-        puzzleButtons = puzzles.GetComponentsInChildren<PuzzleButton>().ToList();
-        _gate = GameObject.Find("OutGate");
-        _animator = _gate.GetComponent<Animator>();
-        _animator.SetBool("IsOpened", false);
+        InitStage();
     }
-
     private void FixedUpdate()
     {
         // 딕셔너리에서 clear == true인 애들 갯수랑 전체 갯수 비교
@@ -51,6 +50,24 @@ public class StageManager : Singleton<StageManager>, IPunObservable
         {
             ClearStage();
         }
+    }
+
+    public void InitStage()
+    { 
+        // 퍼즐 생성하고 번호 부여
+        // 테스트할 때는 인스펙터에서 임의로 지정
+
+        puzzleButtons.Clear();
+        puzzleButtons = puzzles.GetComponentsInChildren<PuzzleButton>().ToList();
+        _gate = GameObject.Find("OutGate");
+        _animator = _gate.GetComponent<Animator>();
+        _animator.SetBool("IsOpened", false);
+    }
+
+    // 랜덤 위치에 퍼즐 생성하고 퍼즐 이름 변경, 번호 부여
+    public void CreatePuzzle()
+    {
+
     }
 
     public void UpdateClearedPuzzle(int puzzleNumber)
