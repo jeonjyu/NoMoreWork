@@ -14,14 +14,15 @@ public class StageObjectManager : MonoBehaviour
         puzzle = GameObject.Find("Map/Puzzle");
         mapObjects = GameObject.Find("Map/MapObjects");
 
-        SetStage();
+        //SetStage();
     }
 
     // 스테이지에 있던 퍼즐 오브젝트들 모두 삭제(풀에 반납)
     public void SetStage()
     {
-        PuzzleButton[] puzzles = puzzle.GetComponentsInChildren<PuzzleButton>();
-        foreach(PuzzleButton puzzle in puzzles) Destroy(puzzle.gameObject);
+        //Puzzle[] puzzles = puzzle.GetComponentsInChildren<Puzzle>();
+        //foreach (Puzzle puzzle in puzzles) ObjectPoolManager.Instance.SetObjInPool(puzzle);
+            //Destroy(puzzle.gameObject);
 
         Instantiate(Grids[Random.Range(0, Grids.Length)], mapObjects.transform);
 
