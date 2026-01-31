@@ -30,13 +30,16 @@ public class StageManager : SingletonPun<StageManager>, IPunObservable
     public Map currentMap;
     [SerializeField] GameObject objSpawner;
     [SerializeField] GameObject clearAlertUI;
-    [SerializeField] GameObject puzzles;
+    [SerializeField] PuzzleBase puzzlePrefab;
+
+    public GameObject puzzleObjects;
+    public GameObject mapObjects;
+    public Tilemap tilemap;
     public CinemachineVirtualCamera virtualCamera;
 
     public int _currentStage = 1;
     bool _isStageClear = false;
-    public List<PuzzleButton> puzzleButtons = new List<PuzzleButton>();
-    public static Dictionary<int, bool> clearedPuzzle = new Dictionary<int, bool>();
+    public List<PuzzleBase> puzzles = new List<PuzzleBase>();
 
     GameObject _gate;
     Animator _animator;
@@ -69,6 +72,7 @@ public class StageManager : SingletonPun<StageManager>, IPunObservable
         }
 
     }
+
     private void FixedUpdate()
     {
         // 호스트만 처리하고 RPC로 클리어 여부 쏴주기
@@ -95,7 +99,28 @@ public class StageManager : SingletonPun<StageManager>, IPunObservable
         // 두번째 스테이지 변경시부터 이벤트 구독 취소
         if (_currentStage != 1)
         {
-            ClearStage();
+            Debug.Log($"[StageManager] 1 스테이지 아님~");
+            //virtualCamera.gameObject.SetActive(false);
+
+            // 퍼즐 디스폰
+            foreach (PuzzleBase puzzle in puzzles)
+            {
+                // 퍼즐이 있을 경우 풀로 반납
+                if (puzzle != null)
+                {
+                    PhotonView photonView = puzzle.GetComponent<PhotonView>();
+                    if (photonView != null) photonView.ViewID = 0;
+                    ObjectPoolManager.Instance.SetObjInPool(puzzle);
+                }
+            }
+            puzzles.RemoveAll(p => p == null);
+
+            Debug.Log($"[StageManager] 퍼즐 풀에 반납");
+            if (currentMap != null && currentMap.outTrigger != null)
+            {
+                Debug.Log($"[StageManger] outTrigger 이벤트 구독해제");
+                //currentMap.outTrigger.PlayerEnteredNextStage -= InitStage;
+            }
         }
 
         // 맵 설정
@@ -130,8 +155,29 @@ public class StageManager : SingletonPun<StageManager>, IPunObservable
         _animator.SetBool("IsOpened", false);
     }
 
-    // 랜덤 위치에 퍼즐 생성하고 퍼즐 이름 변경, 번호 부여
-    public void CreatePuzzle()
+    // 게임씬 초기화 시 맵 오브젝트들 미리 생성해 풀에 넣음
+    private void SetMapObj()
+    {
+        Debug.Log($"[StageManager] 맵 오브젝트 미리 생성");
+
+        ObjectPoolManager.Instance.Init(puzzlePrefab, 4, objSpawner.transform);
+        // 그리드 두개 만들고 오브젝트 풀에 넣고, 
+        foreach(var mapObj in mapStructures)
+        {
+            ObjectPoolManager.Instance.Init(mapObj, 2, objSpawner.transform);
+        }
+    }
+
+    // 플레이어들을 변경된 맵에 스폰
+    private void SpawnPlayerToNextStage()
+    {
+        Player[] players = PhotonNetwork.PlayerList;
+    }
+
+    // 풀에 있는 오브젝트들 가져와서 스폰시키기
+    // 위치도 지정
+    [PunRPC]
+    private void SpawnMapObj(int currStructure)
     {
 
     }
@@ -155,6 +201,24 @@ public class StageManager : SingletonPun<StageManager>, IPunObservable
         virtualCamera.Follow = localPlayer;
         virtualCamera.LookAt = localPlayer;
     }
+
+    /// <summary>
+    /// 호스트에서 정한 위치, 뷰 ID로 풀에서 가져오는 메서드
+    /// </summary>
+    [PunRPC]
+    public void SpawnPuzzle(Vector3 pos, int id)
+    {
+        PuzzleBase puzzle = ObjectPoolManager.Instance.CreateObjWithUsePool(puzzlePrefab);
+        puzzle.transform.parent = puzzleObjects.transform;
+
+        puzzle.transform.position = pos;
+        PhotonView photonView = puzzle.gameObject.GetComponent<PhotonView>();
+        photonView.ViewID = id;
+
+        // 스폰시킨 퍼즐 리스트에 저장
+        puzzles.Add(puzzle);
+    } 
+
     public void ClearStage()
     {
         _isStageClear = true;
