@@ -16,10 +16,7 @@ public class PlayTestEditor: EditorWindow
 
         if(GUILayout.Button("스테이지 클리어"))
         {
-            for(int i = 0; i < StageManager.Instance.puzzleButtons.Count; i++)
-            {
-                StageManager.Instance.UpdateClearedPuzzle(i+1);
-            }
+            StageManager.Instance.ClearedPuzzleCount = StageManager.Instance.puzzles.Count;
         }
     }
 
