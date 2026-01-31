@@ -78,6 +78,17 @@ public class StageManager : Singleton<StageManager>, IPunObservable
             Debug.LogWarning($"[StageManager] 버튼 {puzzleNumber}를 클리어한 퍼즐에 넣을 수 없음");
     }
 
+    public void SetLocalPlayerCamera(Transform localPlayer)
+    {
+        if(virtualCamera == null)
+        {
+            Debug.LogError("[StageManager] 가상 카메라가 할당되어 있지 않음");
+            return;
+        }
+        
+        virtualCamera.Follow = localPlayer;
+        virtualCamera.LookAt = localPlayer;
+    }
     public void ClearStage()
     {
         _isStageClear = true;

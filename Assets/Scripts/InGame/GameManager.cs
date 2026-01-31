@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine.SceneManagement;
 
@@ -10,7 +11,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviourPunCallbacks
 {
     public static GameManager instance;
-    [SerializeField] GameObject playerPrefab;
+    [SerializeField] List<GameObject> playerPrefab = new List<GameObject>();
 
     private void Start()
     {
@@ -25,10 +26,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         yield return new WaitUntil(() => PhotonNetwork.InRoom);
 
         // 네트워크 상에서 생성하기
-        PlayerManager.LocalPlayerInstance = PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(-6.5f, 1, -8f), Quaternion.identity, 0);
-
-        // 생성한 로컬 플레이어를 카메라의 주시 대상으로 설정
-        PlayerCamera.SetPlayerCamera(PlayerManager.LocalPlayerInstance.transform);
+        PlayerManager.PlayerInstance = PhotonNetwork.Instantiate(playerPrefab[Random.Range(0, playerPrefab.Count)].name, new Vector3(-6.5f, 1, -8f), Quaternion.identity, 0);
     }
 
     public override void OnLeftRoom()
