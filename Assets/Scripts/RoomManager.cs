@@ -14,6 +14,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
     [SerializeField] Button _readyBtn;
     [SerializeField] Button _startBtn;
 
+    public static int playerCount;
+
     private IEnumerator Start()
     {
         yield return new WaitUntil(() => PhotonNetwork.InRoom);
@@ -42,6 +44,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         if(PhotonNetwork.IsMasterClient == true)
         {
+            playerCount = players.Length;
             Debug.Log("[RoomManger] 게임 시작");
             PhotonNetwork.LoadLevel(3);
         }
@@ -78,7 +81,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     // player에 있는 애들을 매번 Instantiate 안하고 불러오기할 수 없나?
     public void UpdateUI()
     {
-        Debug.Log("[RoomManager] 리스트 갱신");
+        //Debug.Log("[RoomManager] 리스트 갱신");
 
         if (_listPanel.childCount > 0)
         {
@@ -90,7 +93,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
         foreach (Player player in PhotonNetwork.PlayerList) 
         {
             GameObject slot = Instantiate(_playerSlotPrefab, _listPanel);
-            Debug.Log("[RoomManager] 리스트 " + player.UserId);
             slot.GetComponent<PlayerSlotView>().Init(player);
         }
     }

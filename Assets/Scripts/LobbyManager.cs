@@ -17,7 +17,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     IEnumerator Start()
     {
-        Debug.Log("[LobbyManager] Start | 현재 연결 상태 : " + PhotonNetwork.NetworkClientState);
+        //Debug.Log("[LobbyManager] Start | 현재 연결 상태 : " + PhotonNetwork.NetworkClientState);
 
         yield return new WaitUntil(() => PhotonNetwork.NetworkClientState == ClientState.ConnectedToMasterServer);
 
@@ -65,12 +65,12 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedLobby()
     {
-        Debug.Log("[LobbyManager] 로비 입장");
+        //Debug.Log("[LobbyManager] 로비 입장");
     }
 
     public override void OnJoinedRoom()
     {
-        Debug.Log("[LobbyManager] 방에 입장하여 룸 씬으로 전환 요청");
+        //Debug.Log("[LobbyManager] 방에 입장하여 룸 씬으로 전환 요청");
         SceneManager.LoadScene(2);
     }
 
