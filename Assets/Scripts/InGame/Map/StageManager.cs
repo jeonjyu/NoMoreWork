@@ -22,6 +22,7 @@ public class StageManager : Singleton<StageManager>, IPunObservable
 {
     [SerializeField] GameObject clearAlertUI;
     [SerializeField] GameObject puzzles;
+    public CinemachineVirtualCamera virtualCamera;
 
     static int _currentStage;
     int _numOfPuzzles;

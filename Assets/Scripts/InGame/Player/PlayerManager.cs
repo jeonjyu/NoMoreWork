@@ -1,14 +1,21 @@
-﻿using UnityEngine;
-using Photon.Pun;
-using UnityEngine.InputSystem;
+﻿using Photon.Pun;
+using Photon.Realtime;
+using System.Collections;
+using TMPro;
+using UnityEngine;
+
 
 public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] GameObject Weapon;
-    public static GameObject LocalPlayerInstance;
+    public static GameObject PlayerInstance;
 
     [SerializeField] float _health = 100.0f;
-    bool isInteractioning;
+    string _name;
+    [SerializeField] TMP_Text playerName;
+    [SerializeField] TMP_Text playerNameDisplay;
+
+    float testDamage = 40f;
 
     private void Awake()
     {
@@ -24,25 +31,21 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
-    //private void OnEnable()
-    //{
-    //    base.OnEnable();
+    private IEnumerator Start()
+    {
+        // 생성한 로컬 플레이어를 카메라의 주시 대상으로 설정
+        Debug.Log($"[PlayerManager] PlayerInstance : {PlayerInstance}를 주시 대상으로 설정");
 
-    //    if (!photonView.IsMine) return;
+        if (photonView.IsMine)
+        {
+            yield return null;
 
-    //    // 포톤뷰가 내거라면 inputAction 활성화
+            playerNameDisplay.text = PlayerInstance.name + "의 뷰" + StageManager.Instance.virtualCamera.name;
+            StageManager.Instance.SetLocalPlayerCamera(this.transform);
+        }
 
-        
-    //}
 
-    //private void OnDisable()
-    //{
-        
-    //}
-
-    // 공격 입력 이벤트 처리
-
-    // 공격 시 애니메이션 처리
+    }
 
     // 충돌 처리
     private void OnTriggerEnter(Collider other)
