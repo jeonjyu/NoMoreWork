@@ -65,10 +65,25 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     // 체력이 다 떨어지면 행동 불능 처리하는 메서드
     // 퍼즐 상호작용 중에 행동 불능 되면 상호작용 취소
 
+    public void TakeDamage(float damage)
+    {
+        _health -= damage;
+        if (_health < 0)
+        {
+            // 행동불능
+        }
+    }
 
     // 포톤뷰로 동기화할 것들
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        
+        if (stream.IsWriting)
+        {
+            stream.SendNext(_health);
+        }
+        else
+        {
+            this._health = (float)stream.ReceiveNext();
+        }
     }
 }
