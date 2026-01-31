@@ -50,7 +50,7 @@ public class PuzzleButton : MonoBehaviour, IPunObservable
                 _isClear = true;
                 Debug.Log($"[PuzzleButton] 버튼 {puzzleNumber} 클리어");
                 // StageManager의 클리어한 버튼 리스트에 추가
-                StageManager.Instance.UpdateClearedPuzzle(puzzleNumber);
+                //StageManager.Instance.UpdateClearedPuzzle(puzzleNumber);
                 return;
             }
         }
