@@ -513,6 +513,7 @@ GameObject:
   - component: {fileID: 5618994839594900838}
   - component: {fileID: 45331326447371009}
   - component: {fileID: 8252198347098825783}
+  - component: {fileID: 8910301873056891887}
   m_Layer: 0
   m_Name: ButtonPuzzle
   m_TagString: Untagged
@@ -577,6 +578,28 @@ MonoBehaviour:
   _isClear: 0
   slider: {fileID: 1321077853209713682}
   ButtonObject: {fileID: 7536240136733269889}
+--- !u!114 &8910301873056891887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6996967292810591119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PhotonUnityNetworking::Photon.Pun.PhotonView
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1001 &7230374892695855824
 PrefabInstance:
   m_ObjectHideFlags: 0
