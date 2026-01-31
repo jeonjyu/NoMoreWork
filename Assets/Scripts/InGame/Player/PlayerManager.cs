@@ -38,15 +38,16 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     // 충돌 처리
     private void OnTriggerEnter(Collider other)
     {
-        // 이 객체가 내 포톤뷰가 아니라면 return
+        if (!photonView.IsMine) return;
 
-        // 충돌한 객체가 Enemy인지 확인
+        if(other.CompareTag("Enemy"))
+        {
+            // 체력 감소 처리
+            TakeDamage(testDamage);
+            // 상호작용 취소
 
-        // 체력 감소 처리
-
-        // 상호작용 취소
-
-        // 체력이 다 떨어지면 행동 불능 처리
+            // 체력이 다 떨어지면 행동 불능 처리
+        }
     }
 
     // 체력이 다 떨어지면 행동 불능 처리하는 메서드
