@@ -65,6 +65,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     // 체력이 다 떨어지면 행동 불능 처리하는 메서드
     // 퍼즐 상호작용 중에 행동 불능 되면 상호작용 취소
 
+    public void SpawnPlayer()
+    {
+        if (!photonView.IsMine) return;
+
+        gameObject.transform.position = StageManager.Instance.currentMap.transform.position + new Vector3(-6.5f, 1, -8f);
+    }
+
     public void TakeDamage(float damage)
     {
         _health -= damage;
