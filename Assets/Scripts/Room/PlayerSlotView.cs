@@ -25,10 +25,6 @@ public class PlayerSlotView : MonoBehaviour
         // 프레젠터 생성
         _presenter = GetComponent<PlayerSlotPresenter>();
         _presenter.Init(player);
-
-        // 슬롯에 플레이어 닉네임 설정
-        Debug.Log($"[PlayerSlotView] {player.UserId}");
-        _nickname.text = player.UserId;
         
         ChangeReadyStatus(false);
         //_readyButton.interactable = true;
@@ -43,5 +39,11 @@ public class PlayerSlotView : MonoBehaviour
     {
         _presenter.ChangeReadyStatus();
         //_readyButton.interactable = false;
+    }
+
+    // 슬롯에 플레이어 닉네임 설정
+    public void SetPlayerProfile(string name)
+    {
+        _nickname.text = name;
     }
 }

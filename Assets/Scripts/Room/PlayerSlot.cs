@@ -1,7 +1,5 @@
-﻿using UnityEngine;
-using Photon.Realtime;
+﻿using Photon.Realtime;
 using HashTable = ExitGames.Client.Photon.Hashtable;
-using Photon.Pun;
 using System;
 
 // 플레이어 화면 관리
@@ -31,10 +29,10 @@ public class PlayerSlotModel
 
     public event Action PlayerSlotChanged;
 
-
     public PlayerSlotModel(Player player)
     {
-        _userName = player.NickName;
-        PhotonNetwork.LocalPlayer.SetCustomProperties(playerSlotProps);
+        player.CustomProperties.TryGetValue("FirebaseName", out object name);
+        _userName = (string)name;
+        //PhotonNetwork.LocalPlayer.SetCustomProperties(playerSlotProps);
     }
 }

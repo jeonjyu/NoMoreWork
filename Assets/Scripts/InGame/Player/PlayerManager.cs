@@ -12,7 +12,16 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private void Awake()
     {
-
+        playerNameDisplay = GameObject.Find("PlayerName").GetComponent<TMP_Text>();
+        playerNameDisplay.text = "이름";
+        // 현재 플레이어의 이름을 받아와 저장
+        photonView.Owner.CustomProperties.TryGetValue("FirebaseName", out object name);
+        playerName.text = (string)name;
+        
+        if (photonView.IsMine)
+        {
+            playerNameDisplay.text = (string)name;
+        }
     }
 
     //private void OnEnable()

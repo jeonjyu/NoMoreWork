@@ -14,13 +14,14 @@ public class PlayerSlotPresenter : MonoBehaviour, IPlayerPresenter
     {
         _view = gameObject.GetComponentInParent<PlayerSlotView>();
         _model = new PlayerSlotModel(player);
+        UpdateUI();
     }
 
-    public PlayerSlotPresenter(PlayerSlotView view, Player player)
-    {
-        _view = view;
-        //_model = gameObject.AddComponent<PlayerSlotModel>(player);
-    }
+    //public PlayerSlotPresenter(PlayerSlotView view, Player player)
+    //{
+    //    _view = view;
+    //    //_model = gameObject.AddComponent<PlayerSlotModel>(player);
+    //}
 
     public void OnEnable()
     {
@@ -45,6 +46,7 @@ public class PlayerSlotPresenter : MonoBehaviour, IPlayerPresenter
 
     public void UpdateUI()
     {
-        _view.ChangeReadyStatus(_model.IsReady);
+        //_view.ChangeReadyStatus(_model.IsReady);
+        _view.SetPlayerProfile(_model.UserName);
     }
 }

@@ -12,6 +12,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public enum LoginErrMsg
 {
@@ -100,9 +101,15 @@ public class FirebaseAuthManager : Singleton<FirebaseAuthManager>
         else
         {
             _user = loginTask.Result.User;
+            
+            Hashtable userprops = new Hashtable { { "FirebaseID",  _user.UserId }, { "FirebaseName", _user.DisplayName }  };
+            PhotonNetwork.LocalPlayer.SetCustomProperties(userprops);
+
             UserInfo userInfo = new UserInfo(userName: _user.DisplayName, userId: _user.UserId);
             OnLogin?.Invoke(userInfo.UserId);
+            
             Debug.Log($"[FirebaseAuthManager] 로그인 성공 : {_user.DisplayName}");
+
             PhotonNetwork.JoinLobby();
             SceneManager.LoadScene(1);
         }
