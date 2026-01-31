@@ -1,16 +1,40 @@
 ﻿using UnityEngine;
 
-public class Bullet : MonoBehaviour
+public class Bullet : ObjectBase
 {
-    public int actorNumber;
-    
-    void Start()
-    {
-        GetComponent<Rigidbody>().AddRelativeForce(Vector3.forward * 400f);
+    Rigidbody _rigidbody;
 
-        Destroy(gameObject, 1.0f);
+    void Awake()
+    {
+        _rigidbody = GetComponent<Rigidbody>();
     }
 
+    private void OnEnable()
+    {
+        transform.position = transform.parent.position;
+        transform.rotation = transform.parent.rotation;
+        _rigidbody.AddRelativeForce(this.transform.forward * 400f);
+        //_rigidbody.AddForce(this.transform.forward * 400f, ForceMode.Impulse);
+    }
+    
+    // 소멸 조건 추가
 
-    // 충돌하면 소멸
+    // 일정 거리 이상 가면 디스폰, 그 전에 충돌하면 디스폰
+    public void Despawn()
+    {
+        ObjectPoolManager.Instance.SetObjInPool(this);
+    }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Enemy"))
+        {
+            // other에 데미지 
+            //other.TakeDamage();
+        }
+
+        ObjectPoolManager.Instance.SetObjInPool(this);
+        //transform.position = transform.parent.position;
+        //transform.rotation = transform.parent.rotation;
+    }
 }

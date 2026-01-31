@@ -7,7 +7,8 @@ public class PlayerAttack : MonoBehaviourPun
     public InputActionAsset _inputActions;
 
     [SerializeField] Transform firePos;
-    [SerializeField] GameObject bulletPrefab;
+    [SerializeField] Bullet bulletPrefab;
+    [SerializeField] GameObject bulletSpawner;
 
     InputAction _attackAction;
 
@@ -18,6 +19,7 @@ public class PlayerAttack : MonoBehaviourPun
     private void OnEnable()
     {
         _inputActions.FindActionMap("Player").Enable();
+        ObjectPoolManager.Instance.Init(bulletPrefab, 10, bulletSpawner.transform);
     }
 
     private void OnDisable()
@@ -53,19 +55,25 @@ public class PlayerAttack : MonoBehaviourPun
 
     // actorNum으로 오브젝트풀링?? 할수도 있다고 한다 
     // 오브젝트 풀링이 필요하면 넣고 아니면 그냥 actorNum 없이
-    [PunRPC]
-    void FireBullet(int actornum)
-    {
-        GameObject bullet = Instantiate(bulletPrefab, firePos.position, firePos.rotation);
-        bullet.GetComponent<Bullet>().actorNumber = actornum;
-    }
+    //[PunRPC]
+    //void FireBullet(int actornum)
+    //{
+    //    GameObject bullet = Instantiate(bulletPrefab, firePos.position, firePos.rotation);
+    //    bullet.GetComponent<Bullet>().actorNumber = actornum;
+    //}
+
+    
 
     [PunRPC]
     public void Attack()
     {
         // 공격 호출
         Debug.Log("공격");
-        _animator.SetTrigger("Attack");
-        Instantiate(bulletPrefab, firePos.position, firePos.rotation);
+        _animator?.SetTrigger("Attack");
+        // 오브젝트 풀링으로 변경
+        Bullet bullet = ObjectPoolManager.Instance.CreateObjWithUsePool(bulletPrefab, bulletSpawner.transform);
+        //bullet.transform.parent = firePos.transform;
+        //bullet.transform.position = firePos.position;
+        //bullet.transform.rotation = firePos.rotation;
     }
 }
