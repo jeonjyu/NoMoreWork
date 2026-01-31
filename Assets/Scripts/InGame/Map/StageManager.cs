@@ -39,12 +39,21 @@ public class StageManager : SingletonPun<StageManager>, IPunObservable
 
     public int _currentStage = 1;
     bool _isStageClear = false;
+    int playerCount = RoomManager.playerCount;
+    int _clearedPuzzleCount = 0;
+
+    [SerializeField] TMP_Text floorUIText;
+
+    [SerializeField] public List<Map> maps = new List<Map>();
+    // 클리어한 퍼즐 갯수를 체크하고 퍼즐들 리스트화 하는 자료구조로 변경하기
     public List<PuzzleBase> puzzles = new List<PuzzleBase>();
 
     GameObject _gate;
     Animator _animator;
 
+// properties
     public bool IsStageClear => _isStageClear;
+    public int CurrentStage => _currentStage;
 
     public event EventHandler OnClearStage;
 
@@ -148,9 +157,6 @@ public class StageManager : SingletonPun<StageManager>, IPunObservable
             currentMap.outTrigger.PlayerEnteredNextStage += InitStage;
         }
 
-        puzzleButtons.Clear();
-        puzzleButtons = puzzles.GetComponentsInChildren<PuzzleButton>().ToList();
-        _gate = GameObject.Find("OutGate");
         _animator = _gate.GetComponent<Animator>();
         _animator.SetBool("IsOpened", false);
     }
@@ -179,15 +185,56 @@ public class StageManager : SingletonPun<StageManager>, IPunObservable
     [PunRPC]
     private void SpawnMapObj(int currStructure)
     {
+        // 플레이어 수만큼 퍼즐 스폰
+        for (int i = 0; i < playerCount; i++)
+        {
+            Debug.Log($"[StageManager] 퍼즐 오브젝트 스폰 {i}");
 
+            //Puzzle puzzle = ObjectPoolManager.Instance.CreateObjWithUsePool(puzzlePrefab);
+            //puzzles.Add(puzzle);
+            //// 랜덤 위치 찾아서 오브젝트 있는지 확인하고 스폰 위치로 설정
+            //puzzle.transform.parent = puzzleObjects.transform;
+
+
+            //if (PhotonNetwork.IsMasterClient)
+            //{
+            //    puzzle.transform.position = GetSpawnPos();
+            //}
+
+            Vector3 spawnpos = GetSpawnPos();
+            int photonViewId = PhotonNetwork.AllocateViewID(false);
+            SpawnPuzzle(spawnpos, photonViewId);
+        }
+
+        // 플레이어 수만큼 반복
+        // 호스트에서 랜덤 위치 뽑아서 각 클라이언트에게 위치 알려줌
+        // 뷰 아이디 할당해서 넣어줌
+        // 
+
+        //while (puzzles.Count == playerCount)
+        //{
+        //    int photonViewId = PhotonNetwork.AllocateViewID(false);
+        //    Vector3 spawnId = GetSpawnPos();
+
+        //}
+
+        // 맵에 스폰된 퍼즐들 리스트에 저장
+        //puzzles = puzzleObjects.GetComponentsInChildren<Puzzle>().ToList();
     }
 
-    public void UpdateClearedPuzzle(int puzzleNumber)
+    // 맵에서 오브젝트가 없는 랜덤 위치를 반환
+    public Vector3 GetSpawnPos()
     {
-        if (!clearedPuzzle.ContainsKey(puzzleNumber))
-            clearedPuzzle.Add(puzzleNumber, true);
-        else 
-            Debug.LogWarning($"[StageManager] 버튼 {puzzleNumber}를 클리어한 퍼즐에 넣을 수 없음");
+        bool isAvailable = false;
+        LayerMask maplayerMask = 7; // Map
+        Vector3 spawnPos = currentMap.transform.position;
+        while (!isAvailable)
+        {
+            spawnPos = new Vector3(UnityEngine.Random.Range(-8, 8), 0, UnityEngine.Random.Range(-8, 8));
+            if (Physics.OverlapBox(spawnPos, new Vector3(0.5f, 0, 0.5f), Quaternion.identity, maplayerMask) != null)
+                isAvailable = true;
+        }
+        return spawnPos;
     }
 
     public void SetLocalPlayerCamera(Transform localPlayer)
