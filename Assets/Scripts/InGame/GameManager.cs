@@ -17,7 +17,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         instance = this;
         //플레이어 정보 없으면 코루틴 실행
-        if (PlayerManager.LocalPlayerInstance == null) StartCoroutine(SpawnPlayer());
+        if (PlayerManager.PlayerInstance == null) StartCoroutine(SpawnPlayer());
+
+
+        // 해당 플레이어 오브젝트의 Player로 id, 닉네임 받아서 설정?
     }
 
     IEnumerator SpawnPlayer()
