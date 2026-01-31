@@ -47,6 +47,10 @@ public class StageManager : SingletonPun<StageManager>, IPunObservable
     [SerializeField] public List<Map> maps = new List<Map>();
     // 클리어한 퍼즐 갯수를 체크하고 퍼즐들 리스트화 하는 자료구조로 변경하기
     public List<PuzzleBase> puzzles = new List<PuzzleBase>();
+    //public static Dictionary<int, bool> activatedPuzzles = new Dictionary<int, bool>();
+    
+    [SerializeField] List<mapStructure> mapStructures = new List<mapStructure>();
+
 
     GameObject _gate;
     Animator _animator;
@@ -55,7 +59,9 @@ public class StageManager : SingletonPun<StageManager>, IPunObservable
     public bool IsStageClear => _isStageClear;
     public int CurrentStage => _currentStage;
 
-    public event EventHandler OnClearStage;
+    public int ClearedPuzzleCount { get => _clearedPuzzleCount; set => _clearedPuzzleCount = value; }
+
+    public delegate void StageChange(Map map);
 
     void Start()
     {
@@ -159,6 +165,17 @@ public class StageManager : SingletonPun<StageManager>, IPunObservable
 
         _animator = _gate.GetComponent<Animator>();
         _animator.SetBool("IsOpened", false);
+
+        // 플레이어 스폰 > map만 있으면 모두 같은 위치로 생성되니까 동기화 필요 없음
+
+        // 호스트가 다른 클라이언트들에게 RPC로 오브젝트 스폰시킬 오브젝트 알림
+        if (PhotonNetwork.IsMasterClient)
+        {
+            int currentStructure = UnityEngine.Random.Range(0, mapStructures.Count);
+            SpawnMapObj(currentStructure);
+            //photonView.RPC(nameof(SpawnMapObj), RpcTarget.All, currentStructure);
+        }
+        //SpawnMapObj(); 
     }
 
     // 게임씬 초기화 시 맵 오브젝트들 미리 생성해 풀에 넣음
@@ -185,6 +202,14 @@ public class StageManager : SingletonPun<StageManager>, IPunObservable
     [PunRPC]
     private void SpawnMapObj(int currStructure)
     {
+        Debug.Log($"[StageManager] 맵 오브젝트 스폰");
+
+        // 현재 맵에 맵 구조 스폰
+        mapStructure structure = ObjectPoolManager.Instance.CreateObjWithUsePool(mapStructures[currStructure]);
+        structure.transform.parent = mapObjects.transform;
+
+        //TileManager.Init();
+
         // 플레이어 수만큼 퍼즐 스폰
         for (int i = 0; i < playerCount; i++)
         {
@@ -269,20 +294,25 @@ public class StageManager : SingletonPun<StageManager>, IPunObservable
     public void ClearStage()
     {
         _isStageClear = true;
-        Debug.Log("[StageManager] 스테이지 클리어!");
+        Debug.Log("[StageManager] 스테이지 클리어");
         clearAlertUI.SetActive(true);
         _animator.SetBool("IsOpened", true);
+        _currentStage++;
     }
 
+
+    // 실시간으로 동기화해야 하는 것만 보낼 것
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
         {
             stream.SendNext(_isStageClear);
+            //stream.SendNext(_currentStage);
         }
         else
         {
             this._isStageClear = (bool)stream.ReceiveNext();
+            //this._currentStage = (int)stream.ReceiveNext();
         }
     }
 }
