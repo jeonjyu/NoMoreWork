@@ -88,8 +88,9 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         {
             if (room.RemovedFromList)
             {
+                // 널참조 오류 버그
                 rooms.TryGetValue(room.Name, out RoomSlot roomSlot);
-                Destroy(slots.Find(x => x.name.Contains(room.Name) && x != null).gameObject);
+                Destroy(slots.Find(x => x.name.Contains(room.Name)).gameObject);
                 rooms.Remove(room.Name);
             }
             else if (rooms.TryGetValue(room.Name, out RoomSlot roomSlot) && roomSlot.name == room.Name) 
