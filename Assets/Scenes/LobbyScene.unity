@@ -1227,6 +1227,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PrivateRoomButton
       objectReference: {fileID: 0}
+    - target: {fileID: 8713587549360169383, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1445,14 +1449,18 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2603787678767586041, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
       propertyPath: m_text
-      value: "\uB3CC\uC544\uAC00\uAE30"
+      value: "\uB85C\uADF8\uC544\uC6C3"
       objectReference: {fileID: 0}
     - target: {fileID: 6188803146738748592, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6188803146738748592, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6188803146738748592, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6188803146738748592, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
@@ -1460,11 +1468,23 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 203752423}
     - target: {fileID: 6188803146738748592, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 203752423}
+    - target: {fileID: 6188803146738748592, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6188803146738748592, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6188803146738748592, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SignOut
+      objectReference: {fileID: 0}
+    - target: {fileID: 6188803146738748592, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
       value: ExitLobby
       objectReference: {fileID: 0}
     - target: {fileID: 6188803146738748592, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
@@ -1472,7 +1492,15 @@ PrefabInstance:
       value: LobbyManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 6188803146738748592, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: LobbyManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6188803146738748592, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6188803146738748592, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 7154893473513241026, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
@@ -2018,6 +2046,10 @@ PrefabInstance:
     - target: {fileID: 8713587549360169383, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
       propertyPath: m_Name
       value: SettingButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 8713587549360169383, guid: 033b081a57f35fc4caa380387a5e8e0e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
