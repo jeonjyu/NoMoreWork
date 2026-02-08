@@ -1,4 +1,5 @@
-﻿using Photon.Pun;
+﻿using Firebase.Auth;
+using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,7 +7,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
@@ -14,6 +14,14 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     [SerializeField] GameObject _roomSlotPrefab;
     [SerializeField] Transform _listViewport;
 
+    Dictionary<string, RoomSlot> rooms;
+    List<RoomSlot> slots;
+
+    void Awake()
+    {
+        rooms = new Dictionary<string, RoomSlot>();
+        slots = new List<RoomSlot>();
+    }
 
     IEnumerator Start()
     {
@@ -74,53 +82,80 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         SceneManager.LoadScene(2);
     }
 
-    /// <summary>
-    /// 방 리스트 업데이트 콜백 함수
-    /// todo : MVP로 만들어 UI 업데이트 부분 분리하기
-    /// </summary>
-    /// <param name="roomList">현재 생성된 방 목록</param>
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        if(_listViewport.childCount > 0)
+        foreach (var room in roomList)
         {
-            RectTransform[] slots = _listViewport.GetComponentsInChildren<RectTransform>();
-            foreach (RectTransform child in slots) Destroy(child.gameObject);
-        }
-
-        Debug.Log("[LobbyManager] 방 갯수 : " + roomList.Count);
-
-        foreach (RoomInfo roomInfo in roomList) 
-        {
-            Debug.Log("[LobbyManager] 방 " + roomInfo.Name + " "+  roomInfo.PlayerCount);
-            GameObject roomSlot = Instantiate(_roomSlotPrefab, _listViewport);
-
-            // 직접 배열로 접근해도 되는건가? > to-do : MVP로 만들어 룸 슬롯 모델/뷰로 리팩토링하기 
-            //roomSlot?.GetComponent<RoomSlotView>().Init(roomInfo);
-
-            TMP_Text[] texts = roomSlot.GetComponentsInChildren<TMP_Text>();
-
-            if (texts.Length > 0)
+            if (room.RemovedFromList)
             {
-                texts[0].text = roomInfo.Name;
-                texts[1].text = roomInfo.PlayerCount + " / " + roomInfo.MaxPlayers;
+                rooms.TryGetValue(room.Name, out RoomSlot roomSlot);
+                Destroy(slots.Find(x => x.name.Contains(room.Name) && x != null).gameObject);
+                rooms.Remove(room.Name);
             }
-
-            //버튼에 이벤트 리스너 추가
-            Button btn = roomSlot.GetComponentInChildren<Button>();
-            btn.onClick.AddListener(() => PhotonNetwork.JoinRoom(roomInfo.Name));
-
-
-
-            // 내가 만든 방에서 나왔을 때 반영이 안되는 버그
-            // 슬롯이 업데이트가 안되는 건지는 모르겠다
-
-            // 방에 참가할 수 없을 경우 disable화
-            if (roomInfo.IsOpen == false)
+            else if (rooms.TryGetValue(room.Name, out RoomSlot roomSlot) && roomSlot.name == room.Name) 
             {
-                roomSlot.gameObject.GetComponent<Button>().interactable = false;
+                GameObject roomObj = slots.Find(x => x.name.Contains(room.Name)).gameObject;
+                roomSlot.currentPlayerCount = room.PlayerCount;
+
+                // 방에 참가할 수 없을 경우 disable화
+                if (!room.IsOpen)
+                {
+                    roomSlot.gameObject.GetComponent<Button>().interactable = false;
+                } 
+                else if (room.IsOpen)
+                {
+                    roomSlot.gameObject.GetComponent<Button>().interactable = true;
+                }
+
+            }
+            else
+            {
+                Debug.Log($"[LobbyManager] {room.Name} {room.masterClientId}");
+                CreateRoomSlot(room);
             }
         }
     }
 
+    private void CreateRoomSlot(RoomInfo roomInfo)
+    {
+        Debug.Log("[LobbyManager] 방 " + roomInfo.Name + " " + roomInfo.PlayerCount + " " + roomInfo.masterClientId);
+        GameObject roomSlot = Instantiate(_roomSlotPrefab, _listViewport);
+        RoomSlot slot = roomSlot.GetComponent<RoomSlot>();
+        
+        slot.name = roomInfo.Name;
+        slot.currentPlayerCount = roomInfo.PlayerCount;
+        slot.masterClientId = roomInfo.masterClientId;
 
+        slots.Add(slot);
+        rooms.Add(roomInfo.Name, slot);
+
+        TMP_Text[] texts = roomSlot.GetComponentsInChildren<TMP_Text>();
+
+        if (texts.Length > 0)
+        {
+            texts[0].text = roomInfo.Name;
+            //texts[1].text = roomInfo.PlayerCount + " / " + roomInfo.MaxPlayers;
+        }
+
+        //버튼에 이벤트 리스너 추가
+        Button btn = roomSlot.GetComponentInChildren<Button>();
+        btn.onClick.AddListener(() => PhotonNetwork.JoinRoom(roomInfo.Name));
+
+        // 방에 참가할 수 없을 경우 disable화
+        if (roomInfo.IsOpen == false)
+        {
+            roomSlot.gameObject.GetComponent<Button>().interactable = false;
+        }
+    }
+
+    public void SignOut()
+    {
+        FirebaseAuth auth = FirebaseAuth.DefaultInstance;
+        auth.SignOut();
+
+        if(FirebaseAuth.DefaultInstance.CurrentUser == null)
+            Debug.Log($"[LobbyManager] 로그아웃 성공");
+        else 
+            Debug.Log($"[LobbyManager] 로그아웃 실패");
+    }
 }
