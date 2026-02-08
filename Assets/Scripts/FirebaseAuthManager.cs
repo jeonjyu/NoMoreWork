@@ -58,6 +58,7 @@ public class FirebaseAuthManager : Singleton<FirebaseAuthManager>
             if (dependencyStatus == DependencyStatus.Available)
             {
                 // Create and hold a reference to your FirebaseApp,
+                FirebaseDatabase.DefaultInstance.SetPersistenceEnabled(false);
                 _app = FirebaseApp.DefaultInstance;
                 _auth = FirebaseAuth.DefaultInstance;
                 _dbRef = FirebaseDatabase.DefaultInstance.RootReference;
@@ -97,6 +98,7 @@ public class FirebaseAuthManager : Singleton<FirebaseAuthManager>
             AuthError error = (AuthError) firebaseException.ErrorCode;
 
             PrintErrMsg((LoginErrMsg)error);
+            yield break;
         }
         else
         {
@@ -135,6 +137,8 @@ public class FirebaseAuthManager : Singleton<FirebaseAuthManager>
             Debug.LogError("[FirebaseAuthManager] 회원가입 실패: " + error);
 
             PrintErrMsg((RegisterErrMsg)error);
+            ClearInputField();
+            yield break;
         }
         else
         {
@@ -156,6 +160,8 @@ public class FirebaseAuthManager : Singleton<FirebaseAuthManager>
                     FirebaseException firebaseException = profileTask.Exception.GetBaseException() as FirebaseException;
                     AuthError error = (AuthError)firebaseException.ErrorCode;
                     _errText.text = "프로필 설정에 실패했습니다";
+                    ClearInputField();
+                    yield break;
                 }
                 else
                 {
