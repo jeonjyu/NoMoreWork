@@ -169,10 +169,12 @@ public class FirebaseAuthManager : Singleton<FirebaseAuthManager>
                     UserInfo userInfo = new UserInfo(userName: _user.DisplayName, userId: _user.UserId);
                     OnRegister?.Invoke(userInfo);
                     Debug.Log("[FirebaseAuthManager] 프로필 설정 성공 " + _user.DisplayName);
+                    ClearInputField();
                 }
             }
         }
     }
+
 
     // Enum에 정해둔 에러 Desciption을 출력 텍스트로 넣어준다
     public void PrintErrMsg(Enum errCode)
@@ -182,5 +184,12 @@ public class FirebaseAuthManager : Singleton<FirebaseAuthManager>
         Debug.LogError("[FirebaseAuthManager] " + errCode.GetType().Name + " 에러코드 : " + description);
 
         _errText.text = description.Description;
+    }
+
+    public void ClearInputField()
+    {
+        _emailField.text = string.Empty;
+        _passwordField.text = string.Empty;
+        _usernameField.text = string.Empty;
     }
 }
