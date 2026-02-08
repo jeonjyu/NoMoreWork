@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PuzzleButton : MonoBehaviour, IPunObservable
+public class ButtonPuzzle : PuzzleBase, IPunObservable
 {
     //기능
 
@@ -17,7 +17,7 @@ public class PuzzleButton : MonoBehaviour, IPunObservable
 
     public int puzzleNumber;
 
-    [SerializeField] float _clearValue = 15;
+    [SerializeField] float _clearValue = 10;
     float _startTime;
     float _endTime;
     public float _savedValue;
@@ -35,6 +35,9 @@ public class PuzzleButton : MonoBehaviour, IPunObservable
     {
         slider.maxValue = _clearValue;
         _animator = ButtonObject.GetComponent<Animator>();
+        slider.value = 0;
+        _savedValue = 0;
+        _isClear = false;
     }
 
     void Update()
@@ -49,18 +52,25 @@ public class PuzzleButton : MonoBehaviour, IPunObservable
             {
                 _isClear = true;
                 Debug.Log($"[PuzzleButton] 버튼 {puzzleNumber} 클리어");
-                // StageManager의 클리어한 버튼 리스트에 추가
-                //StageManager.Instance.UpdateClearedPuzzle(puzzleNumber);
+                StageManager.Instance.ClearedPuzzleCount++;
                 return;
             }
         }
+    }
+
+
+    public void InitPuzzle()
+    {
+        slider.value = 0;
+        _savedValue = 0;
+        _isClear = false;
     }
 
     // 영역 안에 들어오면 토글 온 애니메이터
     // 시간 측정 시작
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && _isClear == false)
         {
             Debug.Log("[PuzzleButton] 버튼으로 진입");
             // 아래로 내리는 animator
@@ -94,7 +104,7 @@ public class PuzzleButton : MonoBehaviour, IPunObservable
         if (stream.IsWriting)
         {
             stream.SendNext(_isClear);
-            stream.SendNext(_savedValue); // 너무 복잡해지면 버튼 다시 밟을 때 초기화하는 걸로 변경
+            stream.SendNext(_savedValue);
         }
         else
         {
