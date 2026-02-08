@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using Unity.VisualScripting;
+using UnityEngine;
 using UnityEngine.InputSystem;
-using Photon.Pun;
 
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviourPun
 {
     public InputActionAsset _inputActions;
@@ -22,7 +25,14 @@ public class PlayerMovement : MonoBehaviourPun
     Animator _animator;
     Rigidbody _rigidbody;
 
+    public GameObject MenuCanvas;
     public GameObject PauseDisplay;
+
+    bool _isGround= true;
+    LayerMask _layerMask = 7;
+    float raycastDistance = 0.4f;
+    RaycastHit _raycastHit;
+
 
     private void OnEnable()
     {
@@ -36,6 +46,10 @@ public class PlayerMovement : MonoBehaviourPun
 
     void Awake()
     {
+        MenuCanvas = GameObject.Find("MenuCanvas");
+        PauseDisplay = MenuCanvas?.transform?.GetChild(0)?.gameObject;
+        MenuCanvas.SetActive(false);
+
         if (!photonView.IsMine) return;
         
         _moveAction = InputSystem.actions.FindAction("Move");
@@ -55,27 +69,27 @@ public class PlayerMovement : MonoBehaviourPun
 
         _movement = _moveAction.ReadValue<Vector2>();
 
-        if (_jumpAction.WasPressedThisFrame())
+        if (_isGround && _jumpAction.WasPressedThisFrame())
         {
             Jump();
         }
 
-        if (_interactAction.WasPressedThisFrame())
-        {
-            _animator.SetBool("IsHolding", true);
-            Interact();
-        }
+        // 점프 횟수 제한
+        if(Physics.Raycast(transform.position, Vector3.down, out _raycastHit, raycastDistance))
+            _isGround = true;
+        else
+            _isGround = false;
 
-        if (_interactAction.IsPressed())
-        {
-            //Interact();
-        }
+        //if (_interactAction.WasPressedThisFrame())
+        //{
+        //    _animator.SetBool("IsHolding", true);
+        //    //Interact();
+        //}
 
-        if (_interactAction.WasReleasedThisFrame())
-        {
-            _animator.SetBool("IsHolding", false);
-
-        }
+        //if (_interactAction.WasReleasedThisFrame())
+        //{
+        //    _animator.SetBool("IsHolding", false);
+        //}
 
         DiplayPause();
     }
@@ -85,6 +99,7 @@ public class PlayerMovement : MonoBehaviourPun
         if (!photonView.IsMine) return;
 
         Move();
+    
     }
 
     // 직선 이동, 좌우는 회전 후 전진
@@ -98,7 +113,8 @@ public class PlayerMovement : MonoBehaviourPun
             // toward는 이동 방향으로, upward는 위로 고정해서 회전 방향 지정
             Quaternion targetRotation = Quaternion.LookRotation(input, Vector3.up);
             // 회전
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, _rotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, _rotateSpeed * Time.deltaTime);
+            //transform.Rotate(0, this._rotateSpeed * 2, 0, Space.World);
         }
         // 이동
         _rigidbody.MovePosition(_rigidbody.position + input * _moveSpeed * Time.deltaTime);
@@ -110,12 +126,23 @@ public class PlayerMovement : MonoBehaviourPun
     {
         _rigidbody.AddForceAtPosition(new Vector3(0, 5f, 0), Vector3.up, ForceMode.Impulse);
         _animator.SetTrigger("Jump");
+        _isGround = false;
     }
 
-    public void Interact()
+    public void Interact(GameObject puzzle)
     {
+        DisplayButton displayButton = puzzle.GetComponent<DisplayButton>();
         Debug.Log("상호작용");
         _animator.SetTrigger("Interact");
+        displayButton?.ClearPuzzle();
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("InteractablePuzzle") && _interactAction.IsPressed())
+        {
+            Interact(other.gameObject);
+        }
     }
 
     // 게임 일시 정지 후 UI 입력/Player 입력 활성화
@@ -124,14 +151,24 @@ public class PlayerMovement : MonoBehaviourPun
         if (_pauseActionPlayer.WasPressedThisFrame())
         {
             PauseDisplay.SetActive(true);
-            _inputActions.FindActionMap("Player").Disable();
-            _inputActions.FindActionMap("UI").Enable();
+            PauseGame();
         }
         else if (_pauseActionUI.WasPressedThisFrame())
         {
             PauseDisplay.SetActive(false);
-            _inputActions.FindActionMap("UI").Disable();
-            _inputActions.FindActionMap("Player").Enable();
+            ResumeGame();
         }
+    }
+
+    public void PauseGame()
+    {
+        _inputActions.FindActionMap("Player").Disable();
+        _inputActions.FindActionMap("UI").Enable();
+    }
+
+    public void ResumeGame()
+    {
+        _inputActions.FindActionMap("UI").Disable();
+        _inputActions.FindActionMap("Player").Enable();
     }
 }
