@@ -13,8 +13,14 @@ public class RoomManager : MonoBehaviourPunCallbacks
     [SerializeField] Transform _listPanel;
     [SerializeField] Button _readyBtn;
     [SerializeField] Button _startBtn;
+    [SerializeField] GameObject _ExitPanel;
 
     public static int playerCount;
+
+    private void Awake()
+    {
+        _ExitPanel.SetActive(false);
+    }
 
     private IEnumerator Start()
     {
@@ -24,16 +30,16 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
         foreach (var p in players) Debug.Log(p.UserId);
 
-        if (PhotonNetwork.IsMasterClient == false)
+        if (PhotonNetwork.IsMasterClient)
+        {
+            _readyBtn.gameObject?.SetActive(false);
+            _startBtn.gameObject?.SetActive(true);
+        }
+        else
         {
             // 방장이 아니면 할 일
             _readyBtn.gameObject?.SetActive(true);
             _startBtn.gameObject?.SetActive(false);
-        }
-        else 
-        {
-            _readyBtn.gameObject?.SetActive(false);
-            _startBtn.gameObject?.SetActive(true);
         }
 
         UpdateUI();
@@ -68,14 +74,18 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        if (otherPlayer == PhotonNetwork.MasterClient)
+        if (PhotonNetwork.IsMasterClient)
         {
             Debug.Log("[RoomManager] 방장이 퇴장하여 로비로 이동합니다");
-            ExitRoom();
+            // 알림 패널 띄운 후 클릭하면 이동
+            _ExitPanel.SetActive(true);
         }
-        Debug.Log("[RoomManager]" + otherPlayer.UserId + " 퇴장");
-        // 플레이어 목록 업데이트
-        UpdateUI();
+        else
+        {
+            Debug.Log("[RoomManager]" + otherPlayer.UserId + " 퇴장");
+            // 플레이어 목록 업데이트
+            UpdateUI();
+        }
     }
 
     // player에 있는 애들을 매번 Instantiate 안하고 불러오기할 수 없나?
@@ -87,14 +97,17 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             PlayerSlotView[] slots = _listPanel.GetComponentsInChildren<PlayerSlotView>();
             foreach (PlayerSlotView slot in slots) Destroy(slot.gameObject);
-        }
 
+        }
+ 
         //매번 Instantiate 하는 거랑 있는 presenter 만들어두고 그 애들을 불러오는 거 중에 뭐가 낫지
         foreach (Player player in PhotonNetwork.PlayerList) 
         {
             GameObject slot = Instantiate(_playerSlotPrefab, _listPanel);
             slot.GetComponent<PlayerSlotView>().Init(player);
         }
+
+
     }
 
     public void ExitRoom()
