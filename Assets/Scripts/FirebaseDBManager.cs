@@ -4,12 +4,13 @@ using Firebase.Auth;
 using System.Collections;
 using Photon.Pun;
 using HashTable = ExitGames.Client.Photon.Hashtable;
+using Firebase.Extensions;
 
 
 /// <summary>
 /// user 정보 DB에 저장,로드
 /// </summary>
-public class FirebaseDBManager : MonoBehaviour
+public class FirebaseDBManager : Singleton<FirebaseDBManager>
 {
     DatabaseReference _dbRef;
     FirebaseUser _user;
@@ -17,14 +18,14 @@ public class FirebaseDBManager : MonoBehaviour
     IEnumerator Start()
     {
         Debug.Log("[FirebaseDBManager] AuthManager 기다리는 중");
-        yield return new WaitUntil(() => FirebaseAuthManager.isAwaken == true);
+        yield return new WaitUntil(() => FirebaseAuthManager.Instance.isAwaken == true);
 
         Debug.Log("[FirebaseDBManager] Start");
-        _dbRef = FirebaseAuthManager._dbRef;
-        _user = FirebaseAuthManager._user;
+        _dbRef = FirebaseAuthManager.Instance._dbRef;
+        _user = FirebaseAuthManager.Instance._user;
         
-        FirebaseAuthManager.OnLogin += LoadFromDatabase;
-        FirebaseAuthManager.OnRegister += SaveToDatabase;
+        FirebaseAuthManager.Instance.OnLogin += LoadFromDatabase;
+        FirebaseAuthManager.Instance.OnRegister += SaveToDatabase;
     }
 
     // UserInfo 받아와서 저장
