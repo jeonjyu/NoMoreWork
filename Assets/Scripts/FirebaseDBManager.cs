@@ -96,4 +96,45 @@ public class FirebaseDBManager : Singleton<FirebaseDBManager>
             PhotonNetwork.NickName = dataSnapshot.Child("username").Exists ? dataSnapshot.Child("username").Value.ToString() : "player";
         }
     }
+
+    public bool isSaved = false;
+    public IEnumerator SavePlayData(PlayData playerData)
+    {
+        string toJsonStr = JsonUtility.ToJson(playerData);
+        Debug.Log($"[FirebaseDBManager] 플레이 데이터 : {toJsonStr}");
+
+        FirebaseAuth auth = FirebaseAuth.DefaultInstance;
+        FirebaseUser user = auth.CurrentUser;
+        Debug.Log($"[FirebaseDBManager] 현재 로그인 된 유저 : {user.UserId}");
+
+        if (user == null) 
+        {
+            Debug.LogError("[FirebaseDBManager] 저장 실패 : 로그인 필요");
+            yield break;
+        }
+    
+        _dbRef = FirebaseDatabase.DefaultInstance.RootReference;
+        
+        if(_dbRef == null)
+        {
+            Debug.LogError("[FirebaseDBManager] 저장 실패 : 데이터베이스를 찾을 수 없음");
+            yield break;
+        }
+        //Debug.Log($"[FirebaseDBManager] 경로 확인: users/{user?.UserId}/playerData");
+        var DBTask = _dbRef?.Child("users")?.Child(user.UserId)?.Child("playerData")?.SetRawJsonValueAsync(toJsonStr);
+
+        yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
+
+        if(DBTask.Exception != null)
+        {
+            Debug.LogWarning($"[FirebaseDBManager] 플레이 데이터 저장 실패 {DBTask.Exception}");
+        }
+        else
+        {
+            Debug.Log("[FirebaseDBManager] 플레이 데이터 저장 성공");
+            isSaved = true;
+        }
+
+    }
+
 }
