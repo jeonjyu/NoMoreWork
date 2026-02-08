@@ -39,17 +39,17 @@ public class FirebaseAuthManager : Singleton<FirebaseAuthManager>
     [SerializeField] Button _loginBtn;
     private FirebaseApp _app;
     public FirebaseAuth _auth;
-    public static FirebaseUser _user;
-    public static DatabaseReference _dbRef;
-    public static bool isAwaken;
+    public FirebaseUser _user;
+    public DatabaseReference _dbRef;
+    public bool isAwaken;
 
     [SerializeField] TMP_InputField _emailField;
     [SerializeField] TMP_InputField _passwordField;
     [SerializeField] TMP_InputField _usernameField;
     [SerializeField] TMP_Text _errText;
 
-    public static event Action<string> OnLogin;
-    public static event Action<UserInfo> OnRegister;
+    public event Action<string> OnLogin;
+    public event Action<UserInfo> OnRegister;
 
     private void Awake()
     {
